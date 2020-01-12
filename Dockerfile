@@ -7,6 +7,11 @@ WORKDIR /app
 COPY . .
 ## Using taobao mirror
 RUN yarn install --registry=https://registry.npm.taobao.org --production
+
+## Develop Stage(using dev server)
+EXPOSE 8000
+CMD ["npm", "run", "start"]
+
 ## Build
 RUN yarn run build
 
@@ -14,10 +19,13 @@ RUN yarn run build
 # EXPOSE 8080
 # CMD [ "http-server", "dist" ]
 
-## Production Stage(Using nginx)
-FROM nginx:stable-alpine as production-stage
-## copy dist file to nginx
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-## Expose port 80
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# ## Production Stage(Using nginx)
+# FROM nginx:stable-alpine as production-stage
+# ## copy conf file to nginx
+# ## /api/ direct to 127.0.0.1:8080
+# COPY nginx.conf /etc/nginx/nginx.conf
+# ## copy dist file to nginx
+# COPY --from=build-stage /app/dist /usr/share/nginx/html
+# ## Expose port 80
+# EXPOSE 80
+# CMD ["nginx", "-g", "daemon off;"]

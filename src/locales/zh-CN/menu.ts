@@ -4,6 +4,8 @@ export default {
   'menu.home': '首页',
   'menu.admin': '管理页',
   'menu.login': '登录',
+  'menu.func': '菜单管理',
+  'menu.func.func-code': '菜单编码指令',
   'menu.register': '注册',
   'menu.register.result': '注册结果',
   'menu.dashboard': 'Dashboard',

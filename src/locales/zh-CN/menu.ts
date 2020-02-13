@@ -6,6 +6,8 @@ export default {
   'menu.login': '登录',
   'menu.register': '注册',
   'menu.register.result': '注册结果',
+  'menu.func': '菜单管理',
+  'menu.func.func-expression': '菜单表达式指令',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',

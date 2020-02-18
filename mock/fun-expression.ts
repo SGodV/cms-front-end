@@ -26,10 +26,10 @@ for (let i = 0; i < total; i += 1) {
 }
 
 const getList = (req: Request, res: Response) => {
-  const {pageSize} = req.body.payload;
-  const {currentPage} = req.body.payload;
+  const {pageSize} = req.body;
+  const {pageNum} = req.body;
   const dataSource: any = [];
-  for (let i = currentPage*pageSize; i < (currentPage+1)*pageSize; i += 1) {
+  for (let i = pageNum*pageSize; i < (pageNum+1)*pageSize; i += 1) {
     dataSource.push(dataList[i]);
   };
   // console.log(dataSource);
@@ -38,7 +38,7 @@ const getList = (req: Request, res: Response) => {
     code: 200,
     data: {
       pageSize,
-      currentPage,
+      pageNum,
       total,
       dataSource,
     },

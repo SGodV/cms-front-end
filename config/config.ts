@@ -132,4 +132,14 @@ export default {
   //     pathRewrite: { '^/server': '' },
   //   },
   // },
+  proxy: {
+    '/dapi/v2/chinaunicom/': {
+      target: 'http://bingware.cn:3017/',
+      changeOrigin: true,
+      // pathRewrite: { '^/server/': '' },
+    },
+  },
+  // proxy: {
+  //   '/dapi/v2/chinaunicom': 'http://bingware.cn:3017/'
+  // },
 } as IConfig;

@@ -1,79 +1,145 @@
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import React, { useState, useEffect } from 'react';
-import { Card, Divider, Table, Form, Row, Button, Col, Icon, Input, DatePicker, Popconfirm, Modal } from 'antd';
+import { Card, Divider, Table, Form, Row, Button, Col, Input, Popconfirm, Modal } from 'antd';
 import { connect } from 'dva';
-import { FormComponentProps } from 'antd/lib/form';
-import { FuncExperssionData } from './models/func-expression'
+import { FuncExpressionData, FuncExpressionDataAllowBlank } from './models/func-expression'
+import CreateExpressionForm from './components/FormCreateExpression'
 import styles from './index.less';
 import './index.css'
+import FormQueryExpression from './components/FormQueryExpression';
 
 interface IProps {
   dispatch: any;
-  funcExperssion: any;
+  funcExpression: any;
   formConclude: any;
-}
-
-interface NewFuncExpressionFormProps extends FormComponentProps {
 }
 
 const FuncExpressionTable: React.FC<IProps> = props => {
   const {
     dispatch,
-    funcExperssion: {
-      listData: {pageSizel,currentPage,total,dataSource},
+    funcExpression: {
+      listData: { pageSizel, currentPage, total, dataSource },
+      controlDate: { loading },
     },
-    // formConclude: {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched},
   } = props;
 
   const [expand, changeExpand] = useState<boolean>(false);
   const [firstRender, changeFirstRender] = useState<boolean>(true);
   const [selectedRowKeysRecord, changeSelectedRowKeysRecord] = useState<string[] | number[]>([]);
-  const [selectedRowsRecord, changeSelectedRowsRecord] = useState<FuncExperssionData[]>([]);
+  const [selectedRowsRecord, changeSelectedRowsRecord] = useState<FuncExpressionData[]>([]);
   const [visible, changeVisible] = useState<boolean>(false);
-  const [loading, changeLoading] = useState<boolean>(false);
-  const [modelState, changeModelState] = useState<string>();
-  const [modelData, changeModelData] = useState<FuncExperssionData>(dataSource);
+  const [visible2, changeVisible2] = useState<boolean>(false);
+  // const [loading, changeLoading] = useState<boolean>(false);
+  const [modelData, changeModelData] = useState<FuncExpressionDataAllowBlank>({});
+  const [queryData, changeQueryData] = useState<FuncExpressionDataAllowBlank>({});
 
   const handleChange = ({ current, pageSize }: any) => {
-    dispatch({
-      type: 'funcExperssion/fetchList',
-      payload: {
-        pageNum: current - 1,
-        pageSize,
-      }
-    });
+    if (queryData === {}) {
+      dispatch({
+        type: 'funcExpression/fetchList',
+        payload: {
+          pageNum: current - 1,
+          pageSize,
+        },
+      });
+    }
+    else {
+      dispatch({
+        type: 'funcExpression/queryExpression',
+        payload: {
+          pageNum: current - 1,
+          pageSize,
+          ...queryData,
+        },
+      });
+    }
   };
 
-  const handleOk = () => {
-    changeLoading(true);
-    setTimeout(() => {
-      changeLoading(false);
-      changeVisible(false);
-    }, 3000);
+  const handleCreate = () => {
+    dispatch({
+      type: 'funcExpression/save',
+      payload: { loading: true },
+      index: 'controlDate',
+    });
+    modelData.source = "人工";
+    modelData.create_user = "Serati Ma"
+    modelData.create_date = new Date().toISOString();
+    modelData.create_date = modelData.create_date.slice(0, modelData.create_date.indexOf("T"));
+    dispatch({
+      type: 'funcExpression/createExpression',
+      payload: { ...modelData },
+    });
+    changeVisible(false);
+    changeModelData({});
+    changeQueryData({});
   };
 
   const handleCancel = () => {
     changeVisible(false);
+    changeVisible2(false);
+    changeModelData({});
+    changeQueryData({});
   };
 
   const handleDelete = (eidList: string[] | number[]) => {
     dispatch({
-      type: 'funcExperssion/deleteItem',
+      type: 'funcExpression/deleteExpression',
       payload: {
         eidList,
       }
-    })
+    });
+    changeQueryData({});
   };
 
-  // const handleChoose = (rowKeys: any, row: any) => {
-  //   console.log(rowKeys);
-  //   console.log(row);
-  // };
+  const handleUpdate = () => {
+    dispatch({
+      type: 'funcExpression/save',
+      payload: { loading: true },
+      index: 'controlDate',
+    });
+    modelData.update_date = new Date().toISOString();
+    modelData.update_date = modelData.update_date.slice(0, modelData.update_date.indexOf("T"));
+    dispatch({
+      type: 'funcExpression/updateExpression',
+      payload: {
+        eid: modelData.eid,
+        replace_order: modelData.replace_order,
+        update_date: modelData.update_date,
+      }
+    });
+    changeVisible2(false);
+    changeModelData({});
+  }
 
-  const { RangePicker } = DatePicker;
+  const handleQuery = (flag: number | void) => {
+    dispatch({
+      type: 'funcExpression/save',
+      payload: { loading: true },
+      index: 'controlDate',
+    });
+    if (flag === 1) {
+      dispatch({
+        type: 'funcExpression/queryExpression',
+        payload: {
+          pageNum: 0,
+          pageSize: 10,
+          queryData: undefined,
+        },
+      });
+    }
+    else {
+      dispatch({
+        type: 'funcExpression/queryExpression',
+        payload: {
+          pageNum: 0,
+          pageSize: 10,
+          ...queryData,
+        },
+      });
+    }
+  };
 
   useEffect(() => {
-    // props.formConclude.validateFields();
     if (firstRender) {
       handleChange({ current: currentPage + 1, pageSize: pageSizel });
       changeFirstRender(!firstRender);
@@ -84,52 +150,41 @@ const FuncExpressionTable: React.FC<IProps> = props => {
     {
       title: "eid",
       dataIndex: "eid",
-      // key: "eid",
     },
     {
       title: "原指令",
       dataIndex: "origin_order",
-      // key: "origin_order",
     },
     {
       title: "替换指令",
       dataIndex: "replace_order",
-      // key: "replace_order",
     },
     {
       title: "来源",
       dataIndex: "source",
-      // key: "source",
-      filters: [
-        {
-          text: '机器',
-          value: '0',
-        },
-        {
-          text: '人工',
-          value: '1',
-        },
-      ],
     },
     {
       title: "加入人",
       dataIndex: "create_user",
-      // key: "create_user",
     },
     {
       title: "加入日期",
       dataIndex: "create_date",
-      // key: "create_date",
+    },
+    {
+      title: "修改日期",
+      dataIndex: "update_date",
     },
     {
       title: "Action",
-      // key: "action",
-      render: (record: FuncExperssionData) => (
+      render: (record: FuncExpressionData) => (
         <span>
           <a onClick={() => {
-            changeVisible(true);
-            changeModelState("修改菜单表达式替换关系");
-            changeModelData(record);
+            changeVisible2(true);
+            changeModelData({
+              ...modelData,
+              eid: record.eid,
+            });
           }}
           >修改</a>
           <Divider type="vertical" />
@@ -143,7 +198,7 @@ const FuncExpressionTable: React.FC<IProps> = props => {
 
   const rowSelection = {
     selectedRowKeys: selectedRowKeysRecord,
-    onChange: (selectedRowKeys: string[] | number[], selectedRows: FuncExperssionData[]) => {
+    onChange: (selectedRowKeys: string[] | number[], selectedRows: FuncExpressionData[]) => {
       changeSelectedRowKeysRecord(selectedRowKeys);
       changeSelectedRowsRecord(selectedRows);
     },
@@ -153,83 +208,68 @@ const FuncExpressionTable: React.FC<IProps> = props => {
     <PageHeaderWrapper className={styles.main}>
       <Modal
         visible={visible}
-        title={modelState}
-        onOk={() => handleOk()}
+        title="新增菜单表达式替换关系"
+        onOk={() => handleCreate()}
         onCancel={() => handleCancel()}
         footer={[
           <Button key="back" onClick={() => handleCancel()}>
             取消
-            </Button>,
+          </Button>,
+          <Button key="submit" type="primary" loading={loading} onClick={() => handleCreate()}
+            disabled={
+              modelData.origin_order === undefined ||
+              modelData.origin_order.length <= 0 ||
+              modelData.replace_order === undefined ||
+              modelData.replace_order.length <= 0
+            }>
+            提交
+          </Button>,
         ]}
       >
-        {modelState === "新建菜单表达式替换关系" && (
-          <Form onSubmit={handleOk}>
-            <Form.Item label="原指令:">
-              {/* {getFieldDecorator('origin_order')} */}<Input/>
-            </Form.Item>
-            <Form.Item label="替换指令:"></Form.Item>
-            <Form.Item label="来源:"></Form.Item>
-            <Form.Item label="加入人:"></Form.Item>
-            <Form.Item label="加入日期:"></Form.Item>
-            <Form.Item><Button key="submit" type="primary" loading={loading} onClick={() => handleOk()}>
+        <CreateExpressionForm
+          setCreateDate={changeModelData}
+          modelData={modelData}
+        />
+      </Modal>
+      <Modal
+        visible={visible2}
+        title="修改菜单表达式替换关系"
+        onOk={() => handleUpdate()}
+        onCancel={() => handleCancel()}
+        footer={[
+          <Button key="back" onClick={() => handleCancel()}>
+            取消
+          </Button>,
+          <Button key="submit" type="primary" loading={loading} onClick={() => handleUpdate()}
+            disabled={
+              modelData.replace_order === undefined ||
+              modelData.replace_order.length <= 0
+            }>
             提交
-            </Button></Form.Item>
-          </Form>
-        )}
-        {modelState === "修改菜单表达式替换关系" && (
-          <div>
-            <p>eid: {modelData.eid}</p>
-            <p>原指令: {modelData.origin_order}</p>
-            <p>替换指令: {modelData.replace_order}</p>
-            <p>来源: {modelData.source}</p>
-            <p>加入人: {modelData.create_user}</p>
-            <p>加入日期: {modelData.create_date}</p>
-          </div>
-        )}
+          </Button>,
+        ]}
+      >
+        <Form labelCol={{ span: 6 }} wrapperCol={{ span: 12 }}>
+          <Form.Item label="替换指令:">
+            <Input
+              placeholder="请输入替换指令"
+              value={modelData.replace_order}
+              onChange={e => changeModelData({
+                ...modelData,
+                replace_order: e.target.value,
+              })}
+            />
+          </Form.Item>
+        </Form>
       </Modal>
       <Card>
-        <Form className=".ant-advanced-search-form" onSubmit={undefined}>
-          <Row gutter={24}>
-            <Col span={8}>
-              <Form.Item className={styles.form_item} label="eid">
-                <Input className={styles.form_wrapper} placeholder="placeholder" />
-              </Form.Item >
-            </Col>
-            <Col span={8}>
-              <Form.Item className={styles.form_item} label="原指令">
-                <Input placeholder="placeholder" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item className={styles.form_item} label="替换指令">
-                <Input placeholder="placeholder" />
-              </Form.Item>
-            </Col>
-            <Col span={8} style={{ display: expand ? "block" : "none" }}>
-              <Form.Item className={styles.form_item} label="加入人">
-                <Input placeholder="placeholder" />
-              </Form.Item>
-            </Col>
-            <Col span={16} style={{ display: expand ? "block" : "none" }}>
-              <Form.Item className={styles.form_item} label="加入日期">
-                <RangePicker />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={24} style={{ textAlign: 'right' }}>
-              <Button type="primary" htmlType="submit">
-                查询
-            </Button>
-              <Button style={{ marginLeft: 8 }} onClick={undefined}>
-                重置
-            </Button>
-              <a style={{ marginLeft: 8, fontSize: 12 }} onClick={() => changeExpand(!expand)}>
-                Collapse <Icon type={expand ? 'up' : 'down'} />
-              </a>
-            </Col>
-          </Row>
-        </Form>
+        <FormQueryExpression
+          expand={expand}
+          changeExpand={changeExpand}
+          queryData={queryData}
+          changeQueryData={changeQueryData}
+          handleQuery={handleQuery}
+        />
       </Card>
       <br />
       <Card>
@@ -239,7 +279,6 @@ const FuncExpressionTable: React.FC<IProps> = props => {
               <Button icon="plus" type="primary" style={{ margin: '0 10px' }}
                 onClick={() => {
                   changeVisible(true);
-                  changeModelState("新建菜单表达式替换关系");
                 }}
               >
                 新建
@@ -251,10 +290,10 @@ const FuncExpressionTable: React.FC<IProps> = props => {
               )}
             </Col>
           </Row>
-          <Table<FuncExperssionData>
+          <Table<FuncExpressionData>
             columns={columns}
             dataSource={dataSource}
-            rowKey={(record: FuncExperssionData) => record.eid.toString()}
+            rowKey={(record: FuncExpressionData) => record.eid.toString()}
             rowSelection={rowSelection}
             pagination={{ total, current: currentPage + 1, pageSize: pageSizel }}
             onChange={handleChange}
@@ -265,5 +304,5 @@ const FuncExpressionTable: React.FC<IProps> = props => {
   );
 };
 
-const mapStateToProps = ({ funcExperssion }: any) => ({ funcExperssion });
+const mapStateToProps = ({ funcExpression }: any) => ({ funcExpression });
 export default connect(mapStateToProps)(FuncExpressionTable);

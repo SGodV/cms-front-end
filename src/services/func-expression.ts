@@ -8,14 +8,35 @@ import request from '@/utils/request';
 // }
 
 export async function fetchList(params: any) {
-  return request(`/api/func_exp/getlist`, {
+  return request(`/api/func_exp/get_list`, {
     method: 'POST',
     data: params
   });
 }
 
-export async function deleteItem(params: any) {
-  return request(``, {
+export async function createExpression(params: any) {
+  return request(`/api/func_exp/create_item`, {
+    method: 'POST',
+    data: params
+  });
+}
+
+export async function deleteExpression(params: any) {
+  return request(`/api/func_exp/delete_item`, {
+    method: 'POST',
+    data: params
+  });
+}
+
+export async function updateExpression(params: any) {
+  return request(`/api/func_exp/update_item`, {
+    method: 'POST',
+    data: params
+  });
+}
+
+export async function queryExpression(params: any) {
+  return request(`/api/func_exp/query_list`, {
     method: 'POST',
     data: params
   });

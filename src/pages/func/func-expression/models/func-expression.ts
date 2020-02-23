@@ -1,33 +1,49 @@
 import { Effect } from "dva";
 import { Reducer } from "react";
 import { message } from "antd";
-import { fetchList, deleteItem } from '@/services/func-expression'
+import { fetchList, createExpression, deleteExpression, updateExpression, queryExpression } from '@/services/func-expression'
 
-export interface FuncExperssionData {
+export interface FuncExpressionData {
   eid: number;
   origin_order: string;
   replace_order: string;
   source: string;
   create_user: string;
   create_date: string;
+  update_date?: string;
 }
 
-export interface FuncExperssionState {
+export interface FuncExpressionDataAllowBlank {
+  eid?: number;
+  origin_order?: string;
+  replace_order?: string;
+  source?: string;
+  create_user?: string;
+  create_date?: string;
+  end_create_date?: string;
+  update_date?: string;
+  end_update_date?: string;
+}
+
+export interface FuncExpressionState {
   listData: {
     pageSizel: number;
     currentPage: number;
     total: number;
-    dataSource: FuncExperssionData[];
-    // dataSource: any;
+    dataSource: FuncExpressionData[];
   };
+  controlDate: { loading: boolean; }
 }
 
-export interface FuncExperssionModelType {
-  namespace: 'funcExperssion';
-  state: FuncExperssionState;
+export interface FuncExpressionModelType {
+  namespace: 'funcExpression';
+  state: FuncExpressionState;
   effects: {
     fetchList: Effect;
-    deleteItem: Effect;
+    createExpression: Effect;
+    deleteExpression: Effect;
+    updateExpression: Effect;
+    queryExpression: Effect;
   };
   reducers: {
     save: Reducer<any, any>;
@@ -35,19 +51,15 @@ export interface FuncExperssionModelType {
   };
 }
 
-const FuncExperssion: FuncExperssionModelType = {
-  namespace: 'funcExperssion',
+const FuncExpression: FuncExpressionModelType = {
+  namespace: 'funcExpression',
   state: {
-    listData: {
-      pageSizel: 10,
-      currentPage: 0,
-      total: 10,
-      dataSource: [],
-    }
+    listData: { pageSizel: 10, currentPage: 0, total: 10, dataSource: [] },
+    controlDate: { loading: false },
   },
 
   effects: {
-    *fetchList({payload}, { call, put }) {
+    *fetchList({ payload }, { call, put }) {
       try {
         const res = yield call(fetchList, payload);
         if (res.code === 200) {
@@ -60,26 +72,79 @@ const FuncExperssion: FuncExperssionModelType = {
               dataSource: res.data.dataSource,
             },
             index: 'listData',
-          })
+          });
         }
       } catch (e) {
         message.error(e || '未知错误');
       }
     },
-    *deleteItem(payload, { call, put }) {
+    *createExpression({ payload }, { call, put }) {
       try {
-        const res = yield call(deleteItem, payload);
+        const res = yield call(createExpression, payload);
+        if (res.code === 200) {
+          yield put({
+            type: 'fetchList',
+            payload: { pageNum: 0, pageSize: 10 },
+          });
+        }
+        if (res !== undefined) {
+          yield put({
+            type: 'save',
+            payload: { loading: false },
+            index: 'controlDate',
+          });
+        }
+      } catch (e) {
+        message.error(e || '未知错误');
+      }
+    },
+    *deleteExpression({ payload }, { call, put }) {
+      try {
+        const res = yield call(deleteExpression, payload);
+        if (res.code === 200) {
+          yield put({
+            type: 'fetchList',
+            payload: { pageNum: FuncExpression.state.listData.currentPage, pageSize: FuncExpression.state.listData.pageSizel },
+          });
+        }
+      } catch (e) {
+        message.error(e || '未知错误');
+      }
+    },
+    *updateExpression({ payload }, { call, put }) {
+      try {
+        const res = yield call(updateExpression, payload);
+        if (res.code === 200) {
+          yield put({
+            type: 'fetchList',
+            payload: { pageNum: FuncExpression.state.listData.currentPage, pageSize: FuncExpression.state.listData.pageSizel },
+          });
+        }
+        if (res !== undefined) {
+          yield put({
+            type: 'save',
+            payload: { loading: false },
+            index: 'controlDate',
+          });
+        }
+      } catch (e) {
+        message.error(e || '未知错误');
+      }
+    },
+    *queryExpression({ payload }, { call, put }) {
+      try {
+        const res = yield call(queryExpression, payload);
         if (res.code === 200) {
           yield put({
             type: 'save',
             payload: {
-              pageSizel: res.data.pageSize,
+              pageSize1: res.data.pageSize,
               currentPage: res.data.pageNum,
               total: res.data.total,
               dataSource: res.data.dataSource,
             },
             index: 'listData',
-          })
+          });
         }
       } catch (e) {
         message.error(e || '未知错误');
@@ -100,13 +165,10 @@ const FuncExperssion: FuncExperssionModelType = {
     reset(state) {
       return {
         ...state,
-        currentParameter: {
-          keyword: '',
-          status: 'all',
-        },
+        loading: false,
       };
     },
   },
 };
 
-export default FuncExperssion;
+export default FuncExpression;

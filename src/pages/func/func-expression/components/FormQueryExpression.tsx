@@ -1,12 +1,11 @@
 import { FormComponentProps } from "antd/lib/form";
 import React from "react";
 import { Form, Input, Row, Col, DatePicker, Button, Icon, Select } from "antd";
-import { connect } from "dva";
 import moment from "moment";
 import { RangePickerValue } from "antd/lib/date-picker/interface";
 import { FuncExpressionDataAllowBlank } from "../models/func-expression";
 
-interface IProps extends FormComponentProps {
+interface FormQueryExpressionProps extends FormComponentProps {
   expand: boolean;
   changeExpand: Function;
   queryData: FuncExpressionDataAllowBlank;
@@ -14,7 +13,7 @@ interface IProps extends FormComponentProps {
   handleQuery: Function;
 }
 
-const FormQueryExpression: React.FC<IProps> = props => {
+const FormQueryExpression: React.FC<FormQueryExpressionProps> = props => {
   const { expand, changeExpand, queryData, changeQueryData, handleQuery } = props;
   const { RangePicker } = DatePicker;
   const { Option } = Select;
@@ -55,7 +54,7 @@ const FormQueryExpression: React.FC<IProps> = props => {
   return (
     <Form
       labelCol={{ span: 6 }}
-      wrapperCol={{ span: 12 }}
+      wrapperCol={{ span: 18 }}
     >
       <Row gutter={24}>
         <Col span={6}>
@@ -94,7 +93,7 @@ const FormQueryExpression: React.FC<IProps> = props => {
             />
           </Form.Item>
         </Col>
-        <Col span={6}>
+        <Col span={6} style={{ display: expand ? "block" : "none" }}>
           <Form.Item label="加入人">
             <Select
               allowClear
@@ -109,8 +108,8 @@ const FormQueryExpression: React.FC<IProps> = props => {
             </Select>
           </Form.Item>
         </Col>
-        <Col span={8} style={{ display: expand ? "block" : "none" }}>
-          <Form.Item label="加入日期" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+        <Col span={9} style={{ display: expand ? "block" : "none" }}>
+          <Form.Item label="加入日期" labelCol={{ span: 4 }} wrapperCol={{ span: 18 }}>
             <RangePicker
               allowClear
               value={rangePickerData(queryData.create_date, queryData.end_create_date)}
@@ -118,8 +117,8 @@ const FormQueryExpression: React.FC<IProps> = props => {
             />
           </Form.Item>
         </Col>
-        <Col span={8} style={{ display: expand ? "block" : "none" }}>
-          <Form.Item label="修改日期" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+        <Col span={9} style={{ display: expand ? "block" : "none" }}>
+          <Form.Item label="修改日期" labelCol={{ span: 4 }} wrapperCol={{ span: 18 }}>
             <RangePicker
               allowClear
               value={rangePickerData(queryData.update_date, queryData.end_update_date)}
@@ -127,17 +126,15 @@ const FormQueryExpression: React.FC<IProps> = props => {
             />
           </Form.Item>
         </Col>
-      </Row>
-      <Row>
-        <Col span={24} style={{ textAlign: 'right' }}>
+        <Col span={6} style={{ marginTop: '3.5px', textAlign: 'right' }}>
           <Button type="primary" htmlType="submit" onClick={handleSubmit}>
             查询
             </Button>
-          <Button style={{ marginLeft: 8 }} onClick={handleClear}>
+          <Button style={{ marginLeft: 12 }} onClick={handleClear}>
             重置
             </Button>
-          <a style={{ marginLeft: 8, fontSize: 12 }} onClick={() => changeExpand(!expand)}>
-            Collapse <Icon type={expand ? 'up' : 'down'} />
+          <a style={{ marginLeft: 12, fontSize: 14 }} onClick={() => changeExpand(!expand)}>
+            {expand ? '收起' : '展开'} <Icon type={expand ? 'up' : 'down'} />
           </a>
         </Col>
       </Row>
@@ -145,5 +142,4 @@ const FormQueryExpression: React.FC<IProps> = props => {
   );
 };
 
-const QueryExpressio = Form.create<IProps>()(FormQueryExpression);
-export default connect()(QueryExpressio);
+export default Form.create<FormQueryExpressionProps>()(FormQueryExpression);

@@ -1,15 +1,14 @@
 import { FormComponentProps } from "antd/lib/form";
 import React from "react";
 import { Form, Input } from "antd";
-import { connect } from "dva";
 import { FuncExpressionDataAllowBlank } from "../models/func-expression";
 
-interface IProps extends FormComponentProps {
+interface FormCreateExpressionProps extends FormComponentProps {
   setCreateDate: Function;
   modelData: FuncExpressionDataAllowBlank;
 }
 
-const FormCreateExpression: React.FC<IProps> = props => {
+const FormCreateExpression: React.FC<FormCreateExpressionProps> = props => {
   const { setCreateDate, modelData } = props;
 
   return (
@@ -41,5 +40,4 @@ const FormCreateExpression: React.FC<IProps> = props => {
   );
 };
 
-const CreateExpression = Form.create<IProps>()(FormCreateExpression);
-export default connect()(CreateExpression);
+export default Form.create<FormCreateExpressionProps>()(FormCreateExpression);

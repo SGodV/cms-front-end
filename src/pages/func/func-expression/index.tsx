@@ -7,6 +7,7 @@ import CreateExpressionForm from './components/FormCreateExpression'
 import styles from './index.less';
 import './index.css'
 import FormQueryExpression from './components/FormQueryExpression';
+import { ColumnProps, TableRowSelection } from 'antd/lib/table';
 
 interface IProps {
   dispatch: any;
@@ -146,7 +147,7 @@ const FuncExpressionTable: React.FC<IProps> = props => {
     }
   });
 
-  const columns = [
+  const columns: ColumnProps<FuncExpressionData>[] = [
     {
       title: "eid",
       dataIndex: "eid",
@@ -196,7 +197,7 @@ const FuncExpressionTable: React.FC<IProps> = props => {
     }
   ];
 
-  const rowSelection = {
+  const rowSelection: TableRowSelection<FuncExpressionData> = {
     selectedRowKeys: selectedRowKeysRecord,
     onChange: (selectedRowKeys: string[] | number[], selectedRows: FuncExpressionData[]) => {
       changeSelectedRowKeysRecord(selectedRowKeys);

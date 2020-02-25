@@ -146,6 +146,13 @@ const FuncExpression: FuncExpressionModelType = {
             index: 'listData',
           });
         }
+        if (res !== undefined) {
+          yield put({
+            type: 'save',
+            payload: { loading: false },
+            index: 'controlDate',
+          });
+        }
       } catch (e) {
         message.error(e || '未知错误');
       }

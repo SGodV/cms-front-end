@@ -1,16 +1,19 @@
-import { Form } from 'antd';
-import React, { useRef } from 'react';
+import { Form, Table } from 'antd';
+import React, { } from 'react';
 import { FormComponentProps } from 'antd/es/form';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import { FuncCodeListItem } from './data.d';
-import { queryRule } from './service';
+import { } from './service';
+import { connect } from 'dva';
+import { ColumnProps } from 'antd/lib/table';
 
-interface TableListProps extends FormComponentProps {}
+interface TableListProps extends FormComponentProps {
 
-const TableList: React.FC<TableListProps> = () => {
-  const actionRef = useRef<ActionType>();
-  const columns: ProColumns<FuncCodeListItem>[] = [
+}
+
+const TableList: React.FC<TableListProps> = props => {
+  const {} = props;
+  const columns: ColumnProps<FuncCodeListItem>[] = [
     {
       title: 'functionId',
       dataIndex: 'func_id',
@@ -32,11 +35,9 @@ const TableList: React.FC<TableListProps> = () => {
 
   return (
     <PageHeaderWrapper>
-      <ProTable<FuncCodeListItem>
-        headerTitle="菜单编码指令"
-        actionRef={actionRef}
+      <Table<FuncCodeListItem>
         rowKey="key"
-        request={params => queryRule(params)}
+        onChange={}
         columns={columns}
         rowSelection={undefined}
       />
@@ -44,4 +45,5 @@ const TableList: React.FC<TableListProps> = () => {
   );
 };
 
-export default Form.create<TableListProps>()(TableList);
+const mapToProps = Form.create<TableListProps>()(TableList);
+export default connect()(mapToProps);

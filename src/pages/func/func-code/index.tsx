@@ -36,13 +36,13 @@ const FuncCodeTable: React.FC<FuncCodeTableProps> = props => {
 
   const handleQuery = (flag: number | void) => {
     dispatch({
-      type: 'funcExpression/save',
+      type: 'funcCode/save',
       payload: { loading: true },
       index: 'controlDate',
     });
     if (flag === 1) {
       dispatch({
-        type: 'funcExpression/queryExpression',
+        type: 'funcCode/queryCode',
         payload: {
           pageNum: 0,
           pageSize: 10,
@@ -52,7 +52,7 @@ const FuncCodeTable: React.FC<FuncCodeTableProps> = props => {
     }
     else {
       dispatch({
-        type: 'funcExpression/queryExpression',
+        type: 'funcCode/queryCode',
         payload: {
           pageNum: 0,
           pageSize: 10,

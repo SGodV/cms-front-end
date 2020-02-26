@@ -5,15 +5,15 @@ export interface queryData {
     pageNum: number;
 }
 
-export async function fetchList(params: queryData) {
-    return request('/api/login/fetch_list', {
+export async function fetchList(params: any) {
+    return request('/api/func_code/fetch_list', {
         method: 'POST',
         data: params,
     });
 }
 
 export async function queryCode(params: queryData) {
-    return request('/api/login/query_code', {
+    return request('/api/func_code/query_code', {
         method: 'POST',
         data: params,
     });

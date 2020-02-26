@@ -109,7 +109,7 @@ const queryList = (req: Request, res: Response) => {
   const dataSource: any = [];
   for (let i = 0; i < dataList.length; i += 1) {
     if (
-      (eid === undefined || eid === dataList[i].eid.toString())
+      (eid === undefined || eid === "" || eid === dataList[i].eid.toString())
       && (origin_order === undefined || dataList[i].origin_order.indexOf(origin_order) !== -1)
       && (replace_order === undefined || dataList[i].replace_order.indexOf(replace_order) !== -1)
       && (source === undefined || source === dataList[i].source)

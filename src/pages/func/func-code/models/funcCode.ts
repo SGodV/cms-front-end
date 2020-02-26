@@ -36,7 +36,6 @@ export interface FuncCodeModelType {
   };
   reducers: {
     save: Reducer<any, any>;
-    reset: Reducer<any, any>;
   };
 }
 
@@ -96,12 +95,6 @@ const FuncCode: FuncCodeModelType = {
           ...state[index],
           ...payload,
         },
-      };
-    },
-    reset(state) {
-      return {
-        ...state,
-        loading: false,
       };
     },
   },

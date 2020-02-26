@@ -1,22 +1,20 @@
-import { Form, Table, Card, Row, Button, Col } from 'antd';
+import { Table, Card } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { FormComponentProps } from 'antd/es/form';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { FuncCodeListItem } from './data.d';
-import { } from './service';
 import { connect } from 'dva';
 import { ColumnProps } from 'antd/lib/table';
 import { FuncCodeData, FuncCodeDataAllowBlank } from './models/funcCode';
+import FormQueryCode from './components/FormQueryCode';
 
-interface TableListProps extends FormComponentProps {
+interface FuncCodeTableProps {
   dispatch: any;
-  funcExpression: any;
+  funcCode: any;
 }
 
-const TableList: React.FC<TableListProps> = props => {
+const FuncCodeTable: React.FC<FuncCodeTableProps> = props => {
   const {
     dispatch,
-    funcExpression: {
+    funcCode: {
       listData: { pageSizel, currentPage, total, dataSource },
       controlDate: { loading },
     },
@@ -71,7 +69,7 @@ const TableList: React.FC<TableListProps> = props => {
     }
   })
 
-  const columns: ColumnProps<FuncCodeListItem>[] = [
+  const columns: ColumnProps<FuncCodeData>[] = [
     {
       title: 'functionId',
       dataIndex: 'func_id',
@@ -94,17 +92,17 @@ const TableList: React.FC<TableListProps> = props => {
   return (
     <PageHeaderWrapper>
         <Card>
-        {/* <FormQueryCode
+        <FormQueryCode
           expand={expand}
           changeExpand={changeExpand}
           queryData={queryData}
           changeQueryData={changeQueryData}
           handleQuery={handleQuery}
-        /> */}
+        />
       </Card>
       <br />
       <Card>
-        <Table<FuncCodeListItem>
+        <Table<FuncCodeData>
           columns={columns}
           dataSource={dataSource}
           rowKey={(record: FuncCodeData) => record.func_id.toString()}
@@ -117,4 +115,4 @@ const TableList: React.FC<TableListProps> = props => {
 };
 
 const mapStateToProps = ({ funcCode }: any) => ({ funcCode });
-export default connect(mapStateToProps)(Form.create<TableListProps>()(TableList));
+export default connect(mapStateToProps)(FuncCodeTable);
